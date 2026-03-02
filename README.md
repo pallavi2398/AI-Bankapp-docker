@@ -1,131 +1,96 @@
-# BankApp — Spring Boot Banking Application
+# DevSecOps BankApp
 
-A full-stack banking application built with Spring Boot, designed as a hands-on project for learning DevOps end-to-end.
+[![Java Version](https://img.shields.io/badge/Java-21-blue.svg)](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-![Java 21](https://img.shields.io/badge/Java-21-orange)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.1-green)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-blue)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)
+A modern, secure banking web application built with Spring Boot 3.4.1 and Java 21, featuring an integrated AI assistant and robust DevSecOps practices.
 
-## Features
+## 🌟 Key Features
 
-- **User Registration & Login** — Spring Security with BCrypt password hashing
-- **Dashboard** — View balance, deposit, withdraw, and transfer funds
-- **Transactions** — Full transaction history with timestamps
-- **Dark/Light Theme** — Glassmorphism UI with Bootstrap 5, persisted via localStorage
-- **Prometheus Metrics** — Actuator endpoints exposed for monitoring
+- **Core Banking**: Secure user registration, login, real-time balance tracking, deposits, withdrawals, and peer-to-peer transfers.
+- **AI Banking Assistant**: An integrated chat interface powered by Ollama (TinyLlama) that provides context-aware financial insights based on your transaction history.
+- **High Performance**: Leverages Java 21 **Virtual Threads** for optimal concurrency and scalability.
+- **Modern UI**: Clean, responsive dashboard built with Thymeleaf and modern CSS.
+- **Monitoring & Observability**: Built-in health checks and metrics via Spring Boot Actuator and Prometheus integration.
+- **Containerized Implementation**: Fully Dockerized setup for consistent development and deployment environments.
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-| Layer     | Technology                          |
-|-----------|-------------------------------------|
-| Backend   | Spring Boot 3.4.1, Java 21         |
-| Database  | MySQL 8.0                           |
-| Security  | Spring Security (form login, BCrypt)|
-| Frontend  | Thymeleaf, Bootstrap 5              |
-| Metrics   | Spring Actuator, Micrometer         |
-| Container | Docker, Docker Compose              |
+- **Backend**: Java 21, Spring Boot 3.4.1
+- **Security**: Spring Security (Session-based auth)
+- **Database**: MySQL 8.0, Spring Data JPA (Hibernate)
+- **AI Integration**: Ollama (TinyLlama model)
+- **Frontend**: Thymeleaf, HTML5, CSS3, JavaScript
+- **Observability**: Spring Boot Actuator, Micrometer, Prometheus
+- **Infrastucture**: Docker, Docker Compose
 
-## Quick Start
+## 🚀 Quick Start
 
-### Run with Docker Compose (recommended)
+The fastest way to get the application running is using Docker Compose.
 
-```bash
-git clone https://github.com/TrainWithShubham/AI-BankApp-DevOps.git
-cd AI-BankApp-DevOps
-git checkout docker
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-docker compose up -d
-```
-
-The app will be available at **http://localhost:8080**.
-
-### Run locally (without Docker)
-
-**Prerequisites:** Java 21, Maven, MySQL 8.0
-
-1. Create a MySQL database:
-   ```sql
-   CREATE DATABASE bankappdb;
-   ```
-
-2. Build and run:
+### Running with Docker Compose
+1. Clone the repository.
+2. Navigate to the project root.
+3. Run the following command:
    ```bash
-   ./mvnw clean package -DskipTests
-   java -jar target/*.jar
+   docker-compose up -d
    ```
+4. Access the application at `http://localhost:8080`.
+5. The AI assistant requires the `ollama` container to be running and the `tinyllama` model to be pulled (this may take a few minutes on first start).
 
-   Or override DB defaults with environment variables:
+## 💻 Manual Setup
+
+If you prefer to run the application locally without Docker:
+
+### Prerequisites
+- JDK 21
+- MySQL 8.0
+- [Ollama](https://ollama.com/) (installed and running with `tinyllama` model)
+
+### Steps
+1. **Configure Database**: Create a database named `bankappdb` in your MySQL instance.
+2. **Setup Properties**: Update `src/main/resources/application.properties` with your MySQL credentials.
+3. **Run Ollama**: 
    ```bash
-   MYSQL_HOST=localhost MYSQL_PORT=3306 MYSQL_DATABASE=bankappdb \
-   MYSQL_USER=root MYSQL_PASSWORD=yourpassword \
-   java -jar target/*.jar
+   ollama run tinyllama
+   ```
+4. **Build and Run**:
+   ```bash
+   ./mvnw spring-boot:run
    ```
 
-## Docker
+## 🤖 AI Assistant Integration
 
-### Simple Dockerfile
+The application integrates with [Ollama](https://ollama.com/) to provide a personal banking assistant. It uses the `tinyllama` model by default for a balance of performance and intelligence. The assistant has access to your:
+- Current balance
+- Recent transaction history (Last 5 transactions)
+- Basic account information
 
-```bash
-docker build -t bankapp .
-```
+This allows it to answer questions like "What was my last deposit?" or "Can I afford to spend $50?".
 
-### Multistage Dockerfile (smaller image)
+## 📈 Monitoring
 
-```bash
-docker build -f Dockerfile.multistage -t bankapp .
-```
+The application exposes several management endpoints:
+- **Health Check**: `http://localhost:8080/actuator/health`
+- **Metrics**: `http://localhost:8080/actuator/metrics`
+- **Prometheus Data**: `http://localhost:8080/actuator/prometheus`
 
-### Docker Compose
+## 📂 Project Structure
 
-Spins up MySQL + BankApp with networking and health checks:
-
-```bash
-docker compose up -d        # start
-docker compose logs -f      # view logs
-docker compose down         # stop
-docker compose down -v      # stop and remove volumes
-```
-
-**Services:**
-
-| Service  | Port | Description          |
-|----------|------|----------------------|
-| bankapp  | 8080 | Spring Boot app      |
-| mysql    | 3306 | MySQL 8.0 database   |
-
-## Project Structure
-
-```
+```text
 src/main/java/com/example/bankapp/
-├── config/          # Security configuration
-├── controller/      # Web endpoints
-├── model/           # Account & Transaction entities
-├── repository/      # JPA repositories
-└── service/         # Business logic
-
-src/main/resources/
-├── templates/       # Thymeleaf HTML pages
-├── static/          # CSS, JS (theme toggle)
-└── application.properties
+├── config/        # Security and App configurations
+├── controller/    # Web and REST controllers
+├── model/         # JPA Entities (Account, Transaction)
+├── repository/    # Data access layer
+└── service/       # Business logic (Account, AI/Chat)
 ```
 
-## Environment Variables
+## 📄 License
 
-| Variable         | Default    | Description          |
-|------------------|------------|----------------------|
-| `MYSQL_HOST`     | localhost  | Database host        |
-| `MYSQL_PORT`     | 3306       | Database port        |
-| `MYSQL_DATABASE` | bankappdb  | Database name        |
-| `MYSQL_USER`     | root       | Database username    |
-| `MYSQL_PASSWORD` | Test@123   | Database password    |
-
-## Branch Roadmap
-
-| Branch   | What it adds                                          |
-|----------|-------------------------------------------------------|
-| `start`  | Modernized app (backend + frontend)                   |
-| `docker` | Dockerfile, multistage build, Compose, AI chatbot     |
-| `main`   | Full DevOps pipeline (CI/CD, K8s, etc.)               |
-
-Each branch builds on the previous one. See `ROADMAP.md` for the full checklist.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
