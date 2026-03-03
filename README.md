@@ -165,12 +165,12 @@ The deployment pipeline utilizes OpenID Connect (OIDC) for secure, keyless authe
    - click on created `Identity provider`
    - Asign & Create a role named `GitHubActionsRole`.
    - Enter following details:
-    - Identity provider: Select created one.
-    - Audience: Select created one.
-    - GitHub organization: Your GitHub Username or Orgs Name where this repo is located.
-    - GitHub repository: Write the Repository name of this project. `(e.g, DevSecOps-Bankapp)`
-    - GitHub branch: branch to use for this project `(e.g, devsecops)`
-    - Click on `Next`
+      - Identity provider: Select created one.
+      - Audience: Select created one.
+      - GitHub organization: Your GitHub Username or Orgs Name where this repo is located.
+      - GitHub repository: Write the Repository name of this project. `(e.g, DevSecOps-Bankapp)`
+      - GitHub branch: branch to use for this project `(e.g, devsecops)`
+      - Click on `Next`
 
       ![role](screenshots/11.png)
 
