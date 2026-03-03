@@ -7,6 +7,7 @@ on:
       - '**.md'
       - '.gitignore'
       - 'LICENSE'
+      - 'screenshots/**'
       - 'scripts/**'
 
 permissions:
