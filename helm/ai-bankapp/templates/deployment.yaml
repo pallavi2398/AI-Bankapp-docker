@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ai-bankapp.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "ai-bankapp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ai-bankapp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ai-bankapp.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "ai-bankapp.serviceAccountName" . }}
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox:1.36
+          command: ["/bin/sh", "-c", "until nc -z mysql-service 3306; do sleep 2; done"]
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "50m"
+            limits:
+              memory: "64Mi"
+              cpu: "100m"
+        - name: wait-for-ollama
+          image: busybox:1.36
+          command: ["/bin/sh", "-c", "until nc -z ollama-service 11434; do sleep 2; done"]
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "50m"
+            limits:
+              memory: "64Mi"
+              cpu: "100m"
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: bankapp-config
+            - secretRef:
+                name: bankapp-secret
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
